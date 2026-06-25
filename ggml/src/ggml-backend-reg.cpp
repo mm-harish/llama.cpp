@@ -58,6 +58,10 @@
 #include "ggml-opencl.h"
 #endif
 
+#ifdef GGML_USE_REDEFINE
+#include "ggml-redefine.h"
+#endif
+
 #ifdef GGML_USE_HEXAGON
 #include "ggml-hexagon.h"
 #endif
@@ -142,6 +146,9 @@ struct ggml_backend_registry {
 
 #ifdef GGML_USE_OPENCL
         register_backend(ggml_backend_opencl_reg());
+#endif
+#ifdef GGML_USE_REDEFINE
+        register_backend(ggml_backend_redefine_reg());
 #endif
 #ifdef GGML_USE_ZENDNN
         register_backend(ggml_backend_zendnn_reg());
@@ -578,6 +585,8 @@ void ggml_backend_load_all_from_path(const char * dir_path) {
     ggml_backend_load_best("musa", silent, dir_path);
     ggml_backend_load_best("openvino", silent, dir_path);
     ggml_backend_load_best("cpu", silent, dir_path);
+    ggml_backend_load_best("redefine", silent, dir_path);
+
     // check the environment variable GGML_BACKEND_PATH to load an out-of-tree backend
     const char * backend_path = std::getenv("GGML_BACKEND_PATH");
     if (backend_path) {
